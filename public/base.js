@@ -1,117 +1,160 @@
-console.log('Hello World, from base!');
+console.log('Base js loaded');
 
-console.log('Symbol basics section:');
-// let eventSymbol = Symbol('resize event');
-// console.log(typeof eventSymbol);//logs out 'symbol'
+// NOTE: iterator section
+// let ids = [900, 901, 902];
+// let it = ids[Symbol.iterator]();
+// console.log(it.next()); //logs out {done: false, value: 900}
 
-// const CALCULATE_EVENT_SYMBOL = Symbol('calculate event');
-// console.log(CALCULATE_EVENT_SYMBOL.toString());//logs out "Symbol('calculate event')"
+// let idMaker = {
+//   [Symbol.iterator](){
+//     let nextId = 800;
+//     return {
+//       next(){
+//         return {
+//           value: nextId++,
+//           done: false
+//         };
+//       }
+//     };
+//   }
+// };
 
-// // NOTE: symbols can be assigned to multiple variablse if the .for is exactly equal.
-// let s = Symbol.for('event');
-// let s2 = Symbol.for('event');
-// console.log(s === s2);//logs out 'true'
-//
-// let s = Symbol.for('event');
-// let s2 = Symbol.for('event2');
-// console.log(s === s2);//logs out 'false'
+// let it = idMaker[Symbol.iterator]();
+// console.log(it.next().value);//will log out 800
+// console.log(it.next().value);// will log out 801
 
-// let s = Symbol.for('event');
-// let description = Symbol.keyFor(s);
-// console.log(description); //logs out the human friendly 'event' for location of Symbol
+// for (let v of idMaker) {
+//   if (v > 803) break;
+//     console.log(v); //will log 800, 801, 802, 803
+// }
 
-let article = {
-  title: 'Whiteface Mountain',
-  [Symbol.for('article')]: 'My Article'
+let idMaker = {
+  [Symbol.iterator](){
+    let nextId = 800;
+    return {
+      next(){
+        let value = nextId>803?undefined:nextId++;
+        let done = !value;
+        return {value, done};
+      }
+    };
+  }
 };
 
-let value = article[Symbol.for('article')];
-console.log(value);
+for (let v of idMaker)
+  console.log(v); //will log 800, 801, 802, 803
 
-console.log(Object.getOwnPropertySymbols(article));//logs out the string where Symbol is used to create it.
+  // NOTE: generator section
 
+  // function *process(){
+  //   yield 8000;
+  //   yield 8001;
+  // }
+  // let it = process();
+  // it.next(); //would log out {done: false, value: 8000}
+  // it.next(); //would log out {done: false, value: 8001}
+  // console.log(it.next());//would log out {done: true, value: undefined}
 
-// NOTE: Well-know Symbols Section
-console.log('In well-known symbol section:');
-// let Blog = function() {};
-// Blog.prototype[Symbol.toStringTag] = 'Blog Class';
-// let blog = new Blog();
-// console.log(blog.toString()); //logs out [object Blog Class]
-
-// let values = [8, 12, 16];
-// values[Symbol.isConcatSpreadable] = false;
-// console.log([].concat(values)); //logs [[8, 12, 16]]
-
-// let sum = values + 100;
-// console.log(sum); //logs 8, 12, 16100 due to coercion on the last array value
-
-let values = [8, 12, 16];
-values[Symbol.toPrimitive] = function (hint){
-  console.log(hint);
-  return 42;
-};
-let sum = values + 100;
-console.log(sum);
-
-// NOTE: Object section
-console.log('In Object section:');
-
-// let a = {
-//   x: 1
-// };
-// let b = {
-//   y: 2
-// };
-// Object.setPrototypeOf(a, b);
-// console.log(a.y); //logs out 2 due to prototype chain
-
-// let a = {a: 1}, b = {b:2};
+//   function *process(){
+//     let nextId = 7000;
+//     while (true)
+//       yield(nextId++);
+//   }
 //
-// let target = {};
-// Object.assign(target, a, b);
-// console.log(target);//logs {a: 2, b:2};
+// for (let id of process()){
+//   if (id > 7002) break;
+//   console.log(id);// logs 7000, 7001, 7002
+// }
 
-// let a = {a: 1}, b = {a: 5, b:2};
-// let target = {};
-// Object.assign(target, a, b);
-// console.log(target); //logs {a: 5, b:2}
 
-// let a = {a: 1}, b = {a: 5, b:2};
+// function *process(){
+//   let result = yield;
+//   console.log(`result is ${result}`);
+// }
 //
-// Object.defineProperty(b, 'c', {
-//   value: 10,
-//   enumerable: false
-// });
+// let it = process();
+// it.next();
+// it.next(200);//will log 'result is 200'
+
+// function *process(){
+//   let newArray = [yield, yield, yield];
+//   console.log(newArray[2]);
+// }
 //
-// let target = {};
-// Object.assign(target, a, b);
-// console.log(target);  //logs {a: 5, b:2} - 'c' is not included because it is not enumerable
+// let it = process();
+// it.next()//instantiates the function
+// it.next(2);
+// it.next(4);
+// it.next(36); //will log 36 but function needs to be instantiated 3 times in order for this to log
 
-let a = {a: 1}, b = {a: 5, b:2}, c = {c: 20};
+// function *process() {
+//   let value = 4 * (yield 42);
+//   console.log(value);
+// }
+//
+// let it = process();
+// it.next();
+// it.next(10); //will log 40
 
-Object.setPrototypeOf(b, c);
+// function *process() {
+//   yield 42;
+//   yield*[1, 2, 3]; //yield* takes an interable and temporarily replaces values
+// }
+//
+// let it = process();
+// console.log(it.next());//logs 42
+// console.log(it.next());//logs array[0]
+// console.log(it.next());//logs array[1]
+// console.log(it.next());//logs array[2]
+// console.log(it.next());//logs {done: true, value: undefined}
 
-let target = {};
-Object.assign(target, a, b);
-console.log(target);//logs {a: 5, b:2} because the .assign does not follow prototype chain
 
-// let amount = NaN;
-// console.log(Object.is(amount, amount)); // .is will evaluate this to true as opposed to === in earlier versions.
+// NOTE:Throw and Return section
+function *process() {
+  yield 9000;
+  yield 9001;
+  yield 9002;
+}
 
-let amount = 0, total = -0;
-console.log(Object.is(amount, total)); // .is will evaluate this to false as opposed to === in earlier versions.
+let it = process();
+console.log(it.next().value);
+console.log(it.return('foo'));//must use 'catch' if using 'throw' otherwise will exit execution
+console.log(it.next());
 
-// let title = 'Santa Barbara Surf Riders';
-// console.log(title.startsWith('Santa')); //logs out true because exactly equal
+// NOTE: Promise section
+function doAsync() {
+  let p = new Promise(function(resolve, reject){
+    console.log('in promise code');
+    setTimeout(function (){
+      console.log('resolving...');
+      resolve(getAnotherPromise());
+    }, 2000);
+  });
+  return p;
+}
 
-// let title = 'Santa Barbara Surf Riders';
-// console.log(title.endsWith('Rider')); //logs out false
+doAsync().then(function(){console.log('OK')}, function () {console.log('Nope')});
 
-// let title = 'Santa Barbara Surf Riders';
-// console.log(title.includes('Ba')); //logs out true because 'Ba' is inside the string
+// let promise = doAsync();
 
-var title = "Surfer's \u{1f3c4} Blog";
-console.log(title); //logs out Surfer emoji
 
-let wave = '\u{1f30a}';
-console.log(wave.repeat(10));//logs out 10 wave emoji
+// function noAsync() {
+//   let p = new Promise(function(resolve, reject){
+//     console.log('in no-promise code');
+//     setTimeout(function (){
+//       console.log('rejecting...');
+//       reject();
+//     }, 2000);
+//   });
+//   return p;
+// }
+//
+// let unpromise = noAsync();
+
+// let p1 = new Promise (...);
+// let p2 = new Promise (...);
+//
+// Promise.race([p1, p2]).then( // race will throw the message of whichever promise is rejected or resolved first
+//   function(value){console.log('OK')},
+//   function(reason){console.log('nope')}
+// );
