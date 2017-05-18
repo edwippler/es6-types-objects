@@ -95,8 +95,23 @@ let target = {};
 Object.assign(target, a, b);
 console.log(target);//logs {a: 5, b:2} because the .assign does not follow prototype chain
 
-let amount = NaN;
-console.log(Object.is(amount, amount)); // .is will evaluate this to true as opposed to === in earlier versions.
+// let amount = NaN;
+// console.log(Object.is(amount, amount)); // .is will evaluate this to true as opposed to === in earlier versions.
 
 let amount = 0, total = -0;
-console.log(Object.is(amount, total)); // .is will evaluate this to false as opposed to === in earlier versions. 
+console.log(Object.is(amount, total)); // .is will evaluate this to false as opposed to === in earlier versions.
+
+// let title = 'Santa Barbara Surf Riders';
+// console.log(title.startsWith('Santa')); //logs out true because exactly equal
+
+// let title = 'Santa Barbara Surf Riders';
+// console.log(title.endsWith('Rider')); //logs out false
+
+// let title = 'Santa Barbara Surf Riders';
+// console.log(title.includes('Ba')); //logs out true because 'Ba' is inside the string
+
+var title = "Surfer's \u{1f3c4} Blog";
+console.log(title); //logs out Surfer emoji
+
+let wave = '\u{1f30a}';
+console.log(wave.repeat(10));//logs out 10 wave emoji
