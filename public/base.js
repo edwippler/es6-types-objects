@@ -1,160 +1,111 @@
-console.log('Base js loaded');
+// let salaries = Array.of(90000);
+// console.log(salaries.length);
 
-// NOTE: iterator section
-// let ids = [900, 901, 902];
-// let it = ids[Symbol.iterator]();
-// console.log(it.next()); //logs out {done: false, value: 900}
+// let amounts = [800, 810, 820];
+// let salaries = Array.from(amounts, v => v+100); //create a new array based on the amounts
+// console.log(salaries);
 
-// let idMaker = {
-//   [Symbol.iterator](){
-//     let nextId = 800;
-//     return {
-//       next(){
-//         return {
-//           value: nextId++,
-//           done: false
-//         };
-//       }
-//     };
-//   }
-// };
+let amounts = [800, 810, 820];
+let salaries = Array.from(amounts, function(v){
+  return v + this.adjustment;
+}, {adjustment: 50}); //create a new array based on the amounts
+console.log(salaries);
 
-// let it = idMaker[Symbol.iterator]();
-// console.log(it.next().value);//will log out 800
-// console.log(it.next().value);// will log out 801
+let figures = [600, 700, 800];
+figures.fill(900, 1, 2); //900 is the new value, 1 is the starting index, 2 is the stopping index //using index -1 will count from the end
+console.log(figures);//will log [600, 900, 800]
 
-// for (let v of idMaker) {
-//   if (v > 803) break;
-//     console.log(v); //will log 800, 801, 802, 803
-// }
+// let result = figures.find(value => value >= 700);
+// console.log(result); // will return first item that meets criteria
 
-let idMaker = {
-  [Symbol.iterator](){
-    let nextId = 800;
-    return {
-      next(){
-        let value = nextId>803?undefined:nextId++;
-        let done = !value;
-        return {value, done};
-      }
-    };
+let result = figures.findIndex(function(value, index, array){
+  return value == this;
+}, 800);
+console.log(result);
+
+// figures.copyWithin(2, 0);
+// console.log(figures);
+
+// NOTE: Map & WeakMap section
+console.log('Map Section:');
+// let employee1 = {name: 'Jake'};
+// let employee2 = {name: 'Janet'};
+
+// let employees = new Map();
+// employees.set(employee1, 'ABC');
+// employees.set(employee2, '123');
+
+// console.log(employees.get(employee1));//logs 'ABC'
+// console.log(employees.size);//logs 2
+
+// employees.delete(employee2);
+// console.log(employees.size);//logs out 1
+//
+// employees.clear();
+// console.log(employees.size);// logs out 0
+
+// let employee1 = {name: 'Jake'};
+// let employee2 = {name: 'Janet'};
+// let arr = [
+//   [employee1, 'ABC'],
+//   [employee2, '123']
+// ];
+//
+// let employees = new Map(arr);
+// console.log(employees.size);//logs out 2
+
+// let list = [...employees.values()]; //would log out ['ABC', '123']
+// let list = [...employees.entries()];
+// console.log(list[0][1]);//logs ABC
+
+let employee1 = {name: 'Jake'};
+let employee2 = {name: 'Janet'};
+
+let employees = new WeakMap([
+  [employee1, 'ABC'],
+  [employee2, '123']
+]);
+
+employee1 = null;
+
+console.log(employees.size);//logs undefined
+
+// NOTE: Set & WeakSet
+console.log('in Set section: ');
+
+let perks = new Set();
+
+perks.add('Car');
+perks.add('Super Long Vacation');
+perks.add('Car');
+
+console.log(perks.size);//will log out 2 because Set only counts unique values
+
+// let perks = new Set([ //different way to create a set
+//   'Car',
+//   '10 Weeks Vacation',
+//   'Jet'
+// ]);
+
+// let p1 = {name: 'Ducks'};
+// let p2 = {name: 'Geese'};
+// let birds = new WeakSet([p1, p2]);
+
+// console.log(birds.has(p2));//should log true
+
+// NOTE: Subclass Section
+console.log('Subclass section:');
+
+class Pork extends Array {
+  sum(){
+    let total = 0 ;
+    this.map(v => total += v);
+    return total;
   }
-};
-
-for (let v of idMaker)
-  console.log(v); //will log 800, 801, 802, 803
-
-  // NOTE: generator section
-
-  // function *process(){
-  //   yield 8000;
-  //   yield 8001;
-  // }
-  // let it = process();
-  // it.next(); //would log out {done: false, value: 8000}
-  // it.next(); //would log out {done: false, value: 8001}
-  // console.log(it.next());//would log out {done: true, value: undefined}
-
-//   function *process(){
-//     let nextId = 7000;
-//     while (true)
-//       yield(nextId++);
-//   }
-//
-// for (let id of process()){
-//   if (id > 7002) break;
-//   console.log(id);// logs 7000, 7001, 7002
-// }
-
-
-// function *process(){
-//   let result = yield;
-//   console.log(`result is ${result}`);
-// }
-//
-// let it = process();
-// it.next();
-// it.next(200);//will log 'result is 200'
-
-// function *process(){
-//   let newArray = [yield, yield, yield];
-//   console.log(newArray[2]);
-// }
-//
-// let it = process();
-// it.next()//instantiates the function
-// it.next(2);
-// it.next(4);
-// it.next(36); //will log 36 but function needs to be instantiated 3 times in order for this to log
-
-// function *process() {
-//   let value = 4 * (yield 42);
-//   console.log(value);
-// }
-//
-// let it = process();
-// it.next();
-// it.next(10); //will log 40
-
-// function *process() {
-//   yield 42;
-//   yield*[1, 2, 3]; //yield* takes an interable and temporarily replaces values
-// }
-//
-// let it = process();
-// console.log(it.next());//logs 42
-// console.log(it.next());//logs array[0]
-// console.log(it.next());//logs array[1]
-// console.log(it.next());//logs array[2]
-// console.log(it.next());//logs {done: true, value: undefined}
-
-
-// NOTE:Throw and Return section
-function *process() {
-  yield 9000;
-  yield 9001;
-  yield 9002;
 }
 
-let it = process();
-console.log(it.next().value);
-console.log(it.return('foo'));//must use 'catch' if using 'throw' otherwise will exit execution
-console.log(it.next());
+let a = Pork.from([3, 10, 20]);
+console.log(a.sum());
 
-// NOTE: Promise section
-function doAsync() {
-  let p = new Promise(function(resolve, reject){
-    console.log('in promise code');
-    setTimeout(function (){
-      console.log('resolving...');
-      resolve(getAnotherPromise());
-    }, 2000);
-  });
-  return p;
-}
-
-doAsync().then(function(){console.log('OK')}, function () {console.log('Nope')});
-
-// let promise = doAsync();
-
-
-// function noAsync() {
-//   let p = new Promise(function(resolve, reject){
-//     console.log('in no-promise code');
-//     setTimeout(function (){
-//       console.log('rejecting...');
-//       reject();
-//     }, 2000);
-//   });
-//   return p;
-// }
-//
-// let unpromise = noAsync();
-
-// let p1 = new Promise (...);
-// let p2 = new Promise (...);
-//
-// Promise.race([p1, p2]).then( // race will throw the message of whichever promise is rejected or resolved first
-//   function(value){console.log('OK')},
-//   function(reason){console.log('nope')}
-// );
+// let newArray = a.reverse();
+// console.log(newArray instanceof Pork);//logs true
